@@ -6,4 +6,5 @@ module.exports = {
   tabWidth: 2,
   jsxBracketSameLine: true,
   printWidth: 120,
+  jsxBracketSameLine: false,
 };

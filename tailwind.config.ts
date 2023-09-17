@@ -8,11 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      gridTemplateColumns: {
+        boardHorizontal: '20px 400px',
+        boardVartical: '400px 20px',
       },
     },
+    colors: { blackCell: '#779556', whiteCell: '#ebecd0' },
   },
   plugins: [],
 };
