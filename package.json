@@ -8,18 +8,6 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "YOUR_COMMAND_HERE"
-    }
-  },
-  "lint-staged": {
-    "*.(js|jsx|ts|tsx)": [
-      "npm run lint:fix",
-      "git add"
-    ]
-  },
   "dependencies": {
     "@types/node": "20.6.2",
     "@types/react": "18.2.21",
