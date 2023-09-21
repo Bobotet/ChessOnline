@@ -13,7 +13,7 @@ const config: Config = {
         boardVartical: '400px 20px',
       },
     },
-    colors: { blackCell: '#779556', whiteCell: '#ebecd0' },
+    colors: { blackCell: '#779556', whiteCell: '#ebecd0', activeBlackCell: '#bbcc44', activeWhiteCell: '#f4f680' },
   },
   plugins: [],
 };
