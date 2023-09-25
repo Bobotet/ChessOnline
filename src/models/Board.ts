@@ -11,6 +11,8 @@ export default class Board {
   cells: Cell[][] = [];
   lostBlackFigures: Figure[] = [];
   lostWhiteFigures: Figure[] = [];
+  whiteKing: Figure | null = null;
+  blackKing: Figure | null = null;
 
   /**Метод, который инициализирует клетки */
   public initCells() {
@@ -33,6 +35,10 @@ export default class Board {
       const row = this.cells[y];
       for (let x = 0; x < row.length; x++) {
         const target = row[x];
+        if (target.figure?.name === FigureNames.KING) {
+          target.available = false;
+          continue;
+        }
         target.available = !!selectedCell?.figure?.canMove(target);
       }
     }
@@ -44,6 +50,8 @@ export default class Board {
     newBoard.cells = this.cells;
     newBoard.lostWhiteFigures = this.lostWhiteFigures;
     newBoard.lostBlackFigures = this.lostBlackFigures;
+    newBoard.whiteKing = this.whiteKing;
+    newBoard.blackKing = this.blackKing;
     return newBoard;
   }
 
@@ -78,6 +86,9 @@ export default class Board {
 
     this.cells[0][4].figure = new King('BLACK', FigureNames.KING, this.cells[0][4]);
     this.cells[7][4].figure = new King('WHITE', FigureNames.KING, this.cells[7][4]);
+
+    this.whiteKing = this.cells[7][4].figure;
+    this.blackKing = this.cells[0][4].figure;
   }
 
   /**Добавляет сбитые фигуры в массив сбитых фигур */
@@ -87,5 +98,20 @@ export default class Board {
     } else {
       this.lostBlackFigures.push(figure);
     }
+  }
+
+  /**Метод который проверяет, находится ли король под шахом */
+  public checkKing() {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        if (
+          this.cells[y][x].figure?.canMove(this.blackKing!.cell) ||
+          this.cells[y][x].figure?.canMove(this.whiteKing!.cell)
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

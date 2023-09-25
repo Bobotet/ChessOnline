@@ -30,7 +30,7 @@ export default function ChessCell({ cell, selected, click }: ChessCellProps) {
           height={60}
           className="cursor-pointer"
           draggable
-          onDrag={() => {
+          onDragStart={() => {
             click(cell);
           }}
         />
