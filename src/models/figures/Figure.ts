@@ -32,12 +32,9 @@ export default class Figure {
     if (target.figure?.color === this.color) {
       return false;
     }
-    /**Нельзя бить короля */
-    if (target.figure?.name === FigureNames.KING) {
-      return false;
-    }
     return true;
   }
+
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
   moveFigure(target: Cell) {}
 }

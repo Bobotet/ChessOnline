@@ -28,6 +28,7 @@
     "comma-dangle": "off",
     "@typescript-eslint/comma-dangle": "off",
     "function-paren-newline": "off",
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/exhaustive-deps": "off",
+    "no-continue": "off"
   }
 }

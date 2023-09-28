@@ -1,5 +1,5 @@
 import Board from './Board';
-import Figure from './figures/Figure';
+import Figure, { FigureNames } from './figures/Figure';
 
 export default class Cell {
   readonly x: number;
@@ -103,5 +103,43 @@ export default class Cell {
       return target?.figure?.color !== this.figure?.color;
     }
     return false;
+  }
+
+  /**Метод, который проверяет, находится ли клетка под атакой (нужен для того, чтобы король не мог ходить под шах) */
+  public isCellUnderAttack(target: Cell, figureColor: 'WHITE' | 'BLACK') {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        if (
+          this.board.getCell(x, y).figure?.name !== FigureNames.KING &&
+          this.board.getCell(x, y).figure?.color !== figureColor
+        ) {
+          if (this.board.getCell(x, y).figure?.name === FigureNames.PAWN) {
+            const direction = this.board.getCell(x, y).figure?.color === 'BLACK' ? 1 : -1;
+            if (y + direction === target.y && (x + 1 === target.x || x - 1 === target.x)) {
+              return false;
+            }
+          } else if (this.board.getCell(x, y).figure?.canMove(target)) {
+            return false;
+          }
+        } else if (
+          this.board.getCell(x, y).figure?.name === FigureNames.KING &&
+          this.board.getCell(x, y).figure?.color !== figureColor
+        ) {
+          if (
+            (target.y === y && target.x === x + 1) ||
+            (target.y === y + 1 && target.x === x + 1) ||
+            (target.y === y + 1 && target.x === x) ||
+            (target.y === y + 1 && target.x === x - 1) ||
+            (target.y === y && target.x === x - 1) ||
+            (target.y === y - 1 && target.x === x) ||
+            (target.y === y - 1 && target.x === x - 1) ||
+            (target.y === y - 1 && target.x === x + 1)
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 }

@@ -2,28 +2,31 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Board from '@/models/Board';
 import Cell from '@/models/Cell';
 import Player from '@/models/Player';
+import { FigureNames } from '@/models/figures/Figure';
 import ChessCell from './ChessCell';
 
 const horizontalLine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const verticalLine = [1, 2, 3, 4, 5, 6, 7, 8];
+const verticalLine = [8, 7, 6, 5, 4, 3, 2, 1];
 
 interface ChessBoardProps {
   board: Board;
   setBoard: (board: Board) => void;
   currentPlayer: Player | null;
   changePlayer: () => void;
+  setCheck: (check: boolean) => void;
 }
 
-export default function ChessBoard({ board, setBoard, currentPlayer, changePlayer }: ChessBoardProps) {
+export default function ChessBoard({ board, setBoard, currentPlayer, changePlayer, setCheck }: ChessBoardProps) {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
   /**Функия отрабатывающая при нажатии на клетку */
   const click = (cell: Cell) => {
     /*Передвигаем фигуру*/
     /**Срабатывает, когда игрок уже выделил фигуру и нажал на другую клетку */
-    if (selectedCell && selectedCell.figure?.canMove(cell)) {
+    if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
       selectedCell.moveFigure(cell);
       setSelectedCell(null);
+      setCheck(board.checkBlackKing() || board.checkWhiteKing());
       /**Передает ход след игроку */
       changePlayer();
     } else {
@@ -34,10 +37,12 @@ export default function ChessBoard({ board, setBoard, currentPlayer, changePlaye
     }
   };
 
+  /**Функция, копирующая доску */
   const copyBoard = () => {
     setBoard(board.copyBoard());
   };
 
+  /**Функция, подсвечивающая клетки */
   const highLight = () => {
     board.highLightCells(selectedCell);
     copyBoard();

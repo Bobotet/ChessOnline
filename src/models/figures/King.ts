@@ -9,6 +9,7 @@ export default class King extends Figure {
     this.img = color === 'BLACK' ? blackFigureImg : whiteFigureImg;
   }
 
+  /**Проверяет клетки, на которые может походить король */
   public canMove(target: Cell): boolean {
     if (!super.canMove(target)) {
       return false;
@@ -23,7 +24,8 @@ export default class King extends Figure {
         (target.y === this.cell.y - 1 && target.x === this.cell.x - 1) ||
         (target.y === this.cell.y - 1 && target.x === this.cell.x + 1)) &&
       (this.cell.board.getCell(target.x, target.y).isEmpty() ||
-        this.cell.isEnemy(this.cell.board.getCell(target.x, target.y)))
+        this.cell.isEnemy(this.cell.board.getCell(target.x, target.y))) &&
+      this.cell.isCellUnderAttack(target, this.color)
     ) {
       return true;
     }
