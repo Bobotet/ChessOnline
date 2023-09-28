@@ -151,4 +151,45 @@ export default class Board {
     }
     return newBoard.checkBlackKing();
   }
+
+  /**Метод, который проверяет мат */
+  /**В аргумент принимает цвет игрока, у которога мы проверяем мат */
+  public checkMate(color: 'WHITE' | 'BLACK'): boolean {
+    const newBoard = _.cloneDeep(this);
+    for (let y = 0; y < newBoard.cells.length; y++) {
+      const row = newBoard.cells[y];
+      for (let x = 0; x < row.length; x++) {
+        const target = row[x];
+        if (target.figure?.color === color) {
+          if (!newBoard.checkMoves(target)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  /**Метод, который проверяет, может ли хоть одна фигура данного игрока куда-нибудь походить */
+  public checkMoves(selectedCell: Cell | null) {
+    for (let y = 0; y < this.cells.length; y++) {
+      const row = this.cells[y];
+      for (let x = 0; x < row.length; x++) {
+        const target = row[x];
+        if (target.figure?.name === FigureNames.KING) {
+          target.available = false;
+          continue;
+        }
+        /**Проверяет, будет ли шах, если игрок походит на данную клетку */
+        let kingUnderAttack = false;
+        if (selectedCell) {
+          kingUnderAttack = this.kingWIllBeUnderCheck(selectedCell, this.getCell(x, y));
+        }
+        if (!!selectedCell?.figure?.canMove(target) && !kingUnderAttack) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
