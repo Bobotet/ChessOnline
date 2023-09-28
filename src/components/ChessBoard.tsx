@@ -14,9 +14,17 @@ interface ChessBoardProps {
   currentPlayer: Player | null;
   changePlayer: () => void;
   setCheck: (check: boolean) => void;
+  setMate: (mate: boolean) => void;
 }
 
-export default function ChessBoard({ board, setBoard, currentPlayer, changePlayer, setCheck }: ChessBoardProps) {
+export default function ChessBoard({
+  board,
+  setBoard,
+  currentPlayer,
+  changePlayer,
+  setCheck,
+  setMate,
+}: ChessBoardProps) {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
   /**Функия отрабатывающая при нажатии на клетку */
@@ -26,7 +34,17 @@ export default function ChessBoard({ board, setBoard, currentPlayer, changePlaye
     if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
       selectedCell.moveFigure(cell);
       setSelectedCell(null);
-      setCheck(board.checkBlackKing() || board.checkWhiteKing());
+      /**Проверяем юыл ли поставлен шах или шах и мат */
+      if (board.checkBlackKing()) {
+        setCheck(true);
+        setMate(board.checkMate('BLACK'));
+      } else if (board.checkWhiteKing()) {
+        setCheck(true);
+        setMate(board.checkMate('WHITE'));
+      } else {
+        setCheck(false);
+        setMate(false);
+      }
       /**Передает ход след игроку */
       changePlayer();
     } else {
