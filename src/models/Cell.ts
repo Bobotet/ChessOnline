@@ -95,7 +95,6 @@ export default class Cell {
       target.setFigure(this.figure);
       this.figure = null;
     }
-    this.board.checkKing();
   }
 
   /**Метод, который сообщает о вражеской фигуре на той клетке, куда хочет походить игрок */

@@ -6,7 +6,7 @@ import { FigureNames } from '@/models/figures/Figure';
 import ChessCell from './ChessCell';
 
 const horizontalLine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const verticalLine = [1, 2, 3, 4, 5, 6, 7, 8];
+const verticalLine = [8, 7, 6, 5, 4, 3, 2, 1];
 
 interface ChessBoardProps {
   board: Board;
@@ -23,9 +23,10 @@ export default function ChessBoard({ board, setBoard, currentPlayer, changePlaye
   const click = (cell: Cell) => {
     /*Передвигаем фигуру*/
     /**Срабатывает, когда игрок уже выделил фигуру и нажал на другую клетку */
-    if (selectedCell && selectedCell.figure?.canMove(cell) && cell.figure?.name !== FigureNames.KING) {
+    if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
       selectedCell.moveFigure(cell);
       setSelectedCell(null);
+      setCheck(board.checkBlackKing() || board.checkWhiteKing());
       /**Передает ход след игроку */
       changePlayer();
     } else {
@@ -34,7 +35,6 @@ export default function ChessBoard({ board, setBoard, currentPlayer, changePlaye
         setSelectedCell(cell);
       }
     }
-    setCheck(board.checkKing());
   };
 
   /**Функция, копирующая доску */

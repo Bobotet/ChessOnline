@@ -35,13 +35,6 @@ export default class Figure {
     return true;
   }
 
-  /**Функция проверки шаха */
-  public checkMoves(target: Cell): boolean {
-    if (target.figure?.name === FigureNames.KING && target.figure?.color !== this.color) {
-      return true;
-    }
-    return false;
-  }
   // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
   moveFigure(target: Cell) {}
 }

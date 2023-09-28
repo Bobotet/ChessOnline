@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import _ from 'lodash';
 import Cell from './Cell';
 import Bishop from './figures/Bishop';
 import Figure, { FigureNames } from './figures/Figure';
@@ -39,7 +41,12 @@ export default class Board {
           target.available = false;
           continue;
         }
-        target.available = !!selectedCell?.figure?.canMove(target);
+        /**Проверяет, будет ли шах, если игрок походит на данную клетку */
+        let kingUnderAttack = false;
+        if (selectedCell) {
+          kingUnderAttack = this.kingWIllBeUnderCheck(selectedCell, this.getCell(x, y));
+        }
+        target.available = !!selectedCell?.figure?.canMove(target) && !kingUnderAttack;
       }
     }
   }
@@ -100,18 +107,48 @@ export default class Board {
     }
   }
 
-  /**Метод который проверяет, находится ли король под шахом */
-  public checkKing() {
+  /**Метод который проверяет, находится ли под шахом белый король */
+  public checkWhiteKing(king: King | null = this.whiteKing) {
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
-        if (
-          this.cells[y][x].figure?.canMove(this.blackKing!.cell) ||
-          this.cells[y][x].figure?.canMove(this.whiteKing!.cell)
-        ) {
+        if (this.cells[y][x].figure?.canMove(king!.cell)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  /**Метод который проверяет, находится ли под шахом чёрный король*/
+  public checkBlackKing(king: King | null = this.blackKing) {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        if (this.cells[y][x].figure?.canMove(king!.cell)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**Метод, который проверяет, окажется ли король под шахом если совершится ход */
+  public kingWIllBeUnderCheck(fromCell: Cell, toCell: Cell): boolean {
+    const moveFigureColor = fromCell.figure?.color;
+    let king;
+    const newBoard = _.cloneDeep(this);
+    newBoard.getCell(fromCell.x, fromCell.y).moveFigure(newBoard.getCell(toCell.x, toCell.y));
+    if (toCell.figure?.name === FigureNames.KING) {
+      king = toCell.figure;
+    }
+    if (moveFigureColor === 'WHITE') {
+      if (king) {
+        return newBoard.checkWhiteKing(king);
+      }
+      return newBoard.checkWhiteKing();
+    }
+    if (king) {
+      return newBoard.checkBlackKing(king);
+    }
+    return newBoard.checkBlackKing();
   }
 }
