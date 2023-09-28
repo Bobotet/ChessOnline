@@ -13,6 +13,7 @@ export default function Home() {
   const [blackPlayer] = useState(new Player('BLACK'));
   const [check, setCheck] = useState(false);
   const [mate, setMate] = useState(false);
+  const [stalemate, setStalemate] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
   const createNewBoard = () => {
@@ -35,6 +36,7 @@ export default function Home() {
     <main className="flex flex-col justify-center items-center mt-[100px]">
       <p>{check ? 'Шах' : 'нешах'}</p>
       <p>{mate ? 'Мат' : 'немат'}</p>
+      <p>{stalemate ? 'Пат' : 'непат'}</p>
       {/*<Timer currentPlayer={currentPlayer} restart={createNewBoard} />*/}
       <LostFigures figures={board.lostWhiteFigures} />
       <ChessBoard
@@ -44,6 +46,7 @@ export default function Home() {
         changePlayer={changePlayer}
         setCheck={setCheck}
         setMate={setMate}
+        setStalemate={setStalemate}
       />
       <LostFigures figures={board.lostBlackFigures} />
     </main>

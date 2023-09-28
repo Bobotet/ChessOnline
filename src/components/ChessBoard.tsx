@@ -15,6 +15,7 @@ interface ChessBoardProps {
   changePlayer: () => void;
   setCheck: (check: boolean) => void;
   setMate: (mate: boolean) => void;
+  setStalemate: (setStalemate: boolean) => void;
 }
 
 export default function ChessBoard({
@@ -24,6 +25,7 @@ export default function ChessBoard({
   changePlayer,
   setCheck,
   setMate,
+  setStalemate,
 }: ChessBoardProps) {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
@@ -34,7 +36,7 @@ export default function ChessBoard({
     if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
       selectedCell.moveFigure(cell);
       setSelectedCell(null);
-      /**Проверяем юыл ли поставлен шах или шах и мат */
+      /**Проверяем был ли поставлен шах или шах и мат */
       if (board.checkBlackKing()) {
         setCheck(true);
         setMate(board.checkMate('BLACK'));
@@ -44,6 +46,8 @@ export default function ChessBoard({
       } else {
         setCheck(false);
         setMate(false);
+        /**Проверка пата */
+        setStalemate(board.checkMate(currentPlayer?.color === 'WHITE' ? 'BLACK' : 'WHITE'));
       }
       /**Передает ход след игроку */
       changePlayer();
