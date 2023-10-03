@@ -1,6 +1,7 @@
 {
   "extends": ["next/core-web-vitals", "airbnb", "airbnb-typescript"],
-  "parserOptions": { "project": "./tsconfig.json" },
+  "parserOptions": { "project": "./tsconfig.json", "sourceType": "module" },
+
   "rules": {
     "max-len": ["error", { "code": 120 }],
     "linebreak-style": 0,

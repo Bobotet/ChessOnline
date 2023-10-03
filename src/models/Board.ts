@@ -15,6 +15,7 @@ export default class Board {
   lostWhiteFigures: Figure[] = [];
   whiteKing: Figure | null = null;
   blackKing: Figure | null = null;
+  changingFigure: boolean = false;
 
   /**Метод, который инициализирует клетки */
   public initCells() {
@@ -59,6 +60,7 @@ export default class Board {
     newBoard.lostBlackFigures = this.lostBlackFigures;
     newBoard.whiteKing = this.whiteKing;
     newBoard.blackKing = this.blackKing;
+    newBoard.changingFigure = this.changingFigure;
     return newBoard;
   }
 
