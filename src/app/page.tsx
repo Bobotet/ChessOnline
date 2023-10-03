@@ -1,10 +1,12 @@
 'use client';
 
+import ChangeFigure from '@/components/ChangeFigure';
 import ChessBoard from '@/components/ChessBoard';
 import LostFigures from '@/components/LostFigures';
 /*import Timer from '@/components/TImer';*/
 import Board from '@/models/Board';
 import Player from '@/models/Player';
+import { FigureNames } from '@/models/figures/Figure';
 import React, { useMemo, useState } from 'react';
 
 export default function Home() {
@@ -15,6 +17,11 @@ export default function Home() {
   const [mate, setMate] = useState(false);
   const [stalemate, setStalemate] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const [changingFigureProcess, setChangingFigureProcess] = useState(false);
+  const [changingFigure, setChangingFigure] = useState<{
+    name: FigureNames.QUEEN | FigureNames.ROOK | FigureNames.KNIGHT | FigureNames.BISHOP;
+    color: 'WHITE' | 'BLACK';
+  } | null>(null);
 
   const createNewBoard = () => {
     const newBoard = new Board();
@@ -47,8 +54,18 @@ export default function Home() {
         setCheck={setCheck}
         setMate={setMate}
         setStalemate={setStalemate}
+        setChangingFigureProcess={setChangingFigureProcess}
+        changingFigure={changingFigure}
+        changingFigureProcess={changingFigureProcess}
       />
       <LostFigures figures={board.lostBlackFigures} />
+      {changingFigureProcess ? (
+        <ChangeFigure
+          color={currentPlayer?.color === 'WHITE' ? 'BLACK' : 'WHITE'}
+          setChangingFigure={setChangingFigure}
+          setChangingFigureProcess={setChangingFigureProcess}
+        />
+      ) : null}
     </main>
   );
 }

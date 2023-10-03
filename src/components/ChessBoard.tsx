@@ -3,6 +3,7 @@ import Board from '@/models/Board';
 import Cell from '@/models/Cell';
 import Player from '@/models/Player';
 import { FigureNames } from '@/models/figures/Figure';
+import Pawn from '@/models/figures/Pawn';
 import ChessCell from './ChessCell';
 
 const horizontalLine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -15,7 +16,13 @@ interface ChessBoardProps {
   changePlayer: () => void;
   setCheck: (check: boolean) => void;
   setMate: (mate: boolean) => void;
-  setStalemate: (setStalemate: boolean) => void;
+  setStalemate: (stalemate: boolean) => void;
+  setChangingFigureProcess: (changingFigureProcess: boolean) => void;
+  changingFigure: {
+    name: FigureNames.QUEEN | FigureNames.ROOK | FigureNames.KNIGHT | FigureNames.BISHOP;
+    color: 'WHITE' | 'BLACK';
+  } | null;
+  changingFigureProcess: boolean;
 }
 
 export default function ChessBoard({
@@ -26,29 +33,46 @@ export default function ChessBoard({
   setCheck,
   setMate,
   setStalemate,
+  setChangingFigureProcess,
+  changingFigure,
+  changingFigureProcess,
 }: ChessBoardProps) {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
+  const [changeCell, setChangeCell] = useState<Cell | null>(null);
+
+  /**Функция, которая проверяет шах и/или мат */
+  const checkOrMate = () => {
+    if (board.checkBlackKing()) {
+      setCheck(true);
+      setMate(board.checkMate('BLACK'));
+    } else if (board.checkWhiteKing()) {
+      setCheck(true);
+      setMate(board.checkMate('WHITE'));
+    } else {
+      setCheck(false);
+      setMate(false);
+      /**Проверка пата */
+      setStalemate(board.checkMate(currentPlayer?.color === 'WHITE' ? 'BLACK' : 'WHITE'));
+    }
+  };
 
   /**Функия отрабатывающая при нажатии на клетку */
   const click = (cell: Cell) => {
+    if (changingFigureProcess) return;
     /*Передвигаем фигуру*/
     /**Срабатывает, когда игрок уже выделил фигуру и нажал на другую клетку */
     if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
       selectedCell.moveFigure(cell);
-      setSelectedCell(null);
-      /**Проверяем был ли поставлен шах или шах и мат */
-      if (board.checkBlackKing()) {
-        setCheck(true);
-        setMate(board.checkMate('BLACK'));
-      } else if (board.checkWhiteKing()) {
-        setCheck(true);
-        setMate(board.checkMate('WHITE'));
-      } else {
-        setCheck(false);
-        setMate(false);
-        /**Проверка пата */
-        setStalemate(board.checkMate(currentPlayer?.color === 'WHITE' ? 'BLACK' : 'WHITE'));
+      if (cell.figure?.name === FigureNames.PAWN) {
+        if (Pawn.pawnCanTransform(cell.figure)) {
+          setChangeCell(cell);
+          setChangingFigureProcess(true);
+        } else {
+          setChangingFigureProcess(false);
+        }
       }
+      setSelectedCell(null);
+      checkOrMate();
       /**Передает ход след игроку */
       changePlayer();
     } else {
@@ -74,6 +98,13 @@ export default function ChessBoard({
     highLight();
   }, [selectedCell]);
 
+  useEffect(() => {
+    if (changeCell) {
+      Pawn.pawnTransform(changingFigure, changeCell);
+      setChangeCell(null);
+      checkOrMate();
+    }
+  }, [changingFigure]);
   return (
     <div className="grid grid-rows-boardVartical grid-cols-boardHorizontal">
       <div className="flex flex-col items-center justify-around">

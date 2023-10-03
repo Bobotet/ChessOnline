@@ -2,6 +2,10 @@ import Figure, { FigureNames } from './Figure';
 import blackFigureImg from '../../../public/images/figures/pawn_b.png';
 import whiteFigureImg from '../../../public/images/figures/pawn_w.png';
 import Cell from '../Cell';
+import Queen from './Queen';
+import Rook from './Rook';
+import Knight from './Knight';
+import Bishop from './Bishop';
 
 export default class Pawn extends Figure {
   isFirstStep: boolean = true;
@@ -32,8 +36,54 @@ export default class Pawn extends Figure {
     }
     return false;
   }
-  moveFigure(target: Cell): void {
+
+  public moveFigure(target: Cell): void {
     super.moveFigure(target);
+    /**Проверка пешки на первый ход */
     this.isFirstStep = false;
+  }
+
+  /**Метод, который определяет, может ли пешка трансформироваться в другую фигуру */
+  static pawnCanTransform(figure: Figure): boolean {
+    if (figure.color === 'WHITE' && figure.cell.y === 0) {
+      return true;
+    }
+    if (figure.color === 'BLACK' && figure.cell.y === 7) {
+      return true;
+    }
+    return false;
+  }
+
+  /**Трансформирует пешку */
+  static pawnTransform(
+    changedFigure: {
+      name: FigureNames.QUEEN | FigureNames.ROOK | FigureNames.KNIGHT | FigureNames.BISHOP;
+      color: 'WHITE' | 'BLACK';
+    } | null,
+    cell: Cell
+  ) {
+    let figure: Figure | null = null;
+    switch (changedFigure?.name) {
+      case FigureNames.QUEEN: {
+        figure = new Queen(changedFigure.color, FigureNames.QUEEN, cell);
+        break;
+      }
+      case FigureNames.ROOK: {
+        figure = new Rook(changedFigure.color, FigureNames.QUEEN, cell);
+        break;
+      }
+      case FigureNames.KNIGHT: {
+        figure = new Knight(changedFigure.color, FigureNames.QUEEN, cell);
+        break;
+      }
+      case FigureNames.BISHOP: {
+        figure = new Bishop(changedFigure.color, FigureNames.QUEEN, cell);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    figure ? cell.setFigure(figure) : null;
   }
 }
