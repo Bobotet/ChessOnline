@@ -62,13 +62,15 @@ export default function ChessBoard({
     /*Передвигаем фигуру*/
     /**Срабатывает, когда игрок уже выделил фигуру и нажал на другую клетку */
     if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
-      selectedCell.moveFigure(cell);
-      if (cell.figure?.name === FigureNames.PAWN) {
-        if (Pawn.pawnCanTransform(cell.figure)) {
-          setChangeCell(cell);
-          setChangingFigureProcess(true);
-        } else {
-          setChangingFigureProcess(false);
+      if (selectedCell.figure?.name !== FigureNames.KING || !board.castling(cell)) {
+        selectedCell.moveFigure(cell);
+        if (cell.figure?.name === FigureNames.PAWN) {
+          if (Pawn.pawnCanTransform(cell.figure)) {
+            setChangeCell(cell);
+            setChangingFigureProcess(true);
+          } else {
+            setChangingFigureProcess(false);
+          }
         }
       }
       setSelectedCell(null);

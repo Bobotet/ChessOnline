@@ -13,8 +13,8 @@ export default class Board {
   cells: Cell[][] = [];
   lostBlackFigures: Figure[] = [];
   lostWhiteFigures: Figure[] = [];
-  whiteKing: Figure | null = null;
-  blackKing: Figure | null = null;
+  whiteKing: King | null = null;
+  blackKing: King | null = null;
   changingFigure: boolean = false;
 
   /**Метод, который инициализирует клетки */
@@ -93,11 +93,86 @@ export default class Board {
     this.cells[0][3].figure = new Queen('BLACK', FigureNames.QUEEN, this.cells[0][3]);
     this.cells[7][3].figure = new Queen('WHITE', FigureNames.QUEEN, this.cells[7][3]);
 
-    this.cells[0][4].figure = new King('BLACK', FigureNames.KING, this.cells[0][4]);
-    this.cells[7][4].figure = new King('WHITE', FigureNames.KING, this.cells[7][4]);
+    this.whiteKing = new King('WHITE', FigureNames.KING, this.cells[7][4]);
+    this.blackKing = new King('BLACK', FigureNames.KING, this.cells[0][4]);
 
-    this.whiteKing = this.cells[7][4].figure;
-    this.blackKing = this.cells[0][4].figure;
+    this.cells[0][4].figure = this.blackKing;
+    this.cells[7][4].figure = this.whiteKing;
+
+    this.setRooksToKings();
+  }
+
+  /**Привязывает по две ладьи к каждому королю для рокировки */
+  public setRooksToKings() {
+    this.whiteKing?.setRooks();
+    this.blackKing?.setRooks();
+  }
+
+  /**Метод, который срабатывает при рокировке */
+  public castling(cell: Cell): boolean {
+    if (cell.x === 2 && cell.y === 7 && this.whiteKing?.isFirstStep) {
+      this.whiteLeftCastling();
+      return true;
+    }
+    if (cell.x === 2 && cell.y === 0 && this.blackKing?.isFirstStep) {
+      this.blackLeftCastling();
+      return true;
+    }
+    if (cell.x === 6 && cell.y === 7 && this.whiteKing?.isFirstStep) {
+      this.whiteRightCastling();
+      return true;
+    }
+    if (cell.x === 6 && cell.y === 0 && this.blackKing?.isFirstStep) {
+      this.blackRightCastling();
+      return true;
+    }
+    return false;
+  }
+
+  /**Методы, отвечающие за различные рокировки */
+  public whiteLeftCastling() {
+    const leftRook = this.getCell(0, 7).figure;
+    if (leftRook && this.whiteKing) {
+      this.whiteKing.moveFigure(this.getCell(2, 7));
+      this.getCell(2, 7).setFigure(this.whiteKing);
+      this.getCell(4, 7)!.figure = null;
+      leftRook?.moveFigure(this.getCell(3, 7));
+      this.getCell(3, 7).setFigure(leftRook);
+      this.getCell(0, 7)!.figure = null;
+    }
+  }
+  public blackLeftCastling() {
+    const leftRook = this.getCell(0, 0).figure;
+    if (leftRook && this.blackKing) {
+      this.blackKing.moveFigure(this.getCell(2, 0));
+      this.getCell(2, 0).setFigure(this.blackKing);
+      this.getCell(4, 0)!.figure = null;
+      leftRook?.moveFigure(this.getCell(5, 7));
+      this.getCell(3, 0).setFigure(leftRook);
+      this.getCell(0, 0)!.figure = null;
+    }
+  }
+  public whiteRightCastling() {
+    const rightRook = this.getCell(7, 7).figure;
+    if (rightRook && this.whiteKing) {
+      this.whiteKing.moveFigure(this.getCell(6, 7));
+      this.getCell(6, 7).setFigure(this.whiteKing);
+      this.getCell(4, 7)!.figure = null;
+      rightRook?.moveFigure(this.getCell(5, 7));
+      this.getCell(5, 7).setFigure(rightRook);
+      this.getCell(7, 7)!.figure = null;
+    }
+  }
+  public blackRightCastling() {
+    const rightRook = this.getCell(7, 0).figure;
+    if (rightRook && this.blackKing) {
+      this.blackKing.moveFigure(this.getCell(6, 0));
+      this.getCell(6, 0).setFigure(this.blackKing);
+      this.getCell(4, 0)!.figure = null;
+      rightRook.moveFigure(this.getCell(5, 0));
+      this.getCell(5, 0).setFigure(rightRook);
+      this.getCell(7, 0)!.figure = null;
+    }
   }
 
   /**Добавляет сбитые фигуры в массив сбитых фигур */
@@ -110,7 +185,7 @@ export default class Board {
   }
 
   /**Метод который проверяет, находится ли под шахом белый король */
-  public checkWhiteKing(king: King | null = this.whiteKing) {
+  public checkWhiteKing(king: Figure | null = this.whiteKing) {
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
         if (this.cells[y][x].figure?.canMove(king!.cell)) {
@@ -122,7 +197,7 @@ export default class Board {
   }
 
   /**Метод который проверяет, находится ли под шахом чёрный король*/
-  public checkBlackKing(king: King | null = this.blackKing) {
+  public checkBlackKing(king: Figure | null = this.blackKing) {
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
         if (this.cells[y][x].figure?.canMove(king!.cell)) {
