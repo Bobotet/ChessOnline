@@ -1,5 +1,6 @@
 import Board from './Board';
 import Figure, { FigureNames } from './figures/Figure';
+import Pawn from './figures/Pawn';
 
 export default class Cell {
   readonly x: number;
@@ -88,12 +89,61 @@ export default class Cell {
   /**Метод, который отрабатывает при перемещении фигуры */
   moveFigure(target: Cell) {
     if (this?.figure?.canMove(target)) {
-      this.figure.moveFigure(target);
-      if (target.figure) {
-        this.board.addLostFigure(target.figure);
+      /**Реализация взятия на проходе */
+      if (this.figure instanceof Pawn) {
+        if (this.figure.color === 'BLACK') {
+          if (
+            this.board.getCell(target.x, target.y - 1) &&
+            this.board.getCell(target.x, target.y - 1).figure &&
+            this.board.getCell(target.x, target.y - 1).figure instanceof Pawn &&
+            this.board.getCell(target.x, target.y - 1).figure?.color !== this.figure.color &&
+            //@ts-ignore: error message
+            this.board.getCell(target.x, target.y - 1).figure!.canBeTakeOnThePass
+          ) {
+            //@ts-ignore: error message
+            this.board.addLostFigure(this.board.getCell(target.x, target.y - 1).figure);
+            this.board.getCell(target.x, target.y).setFigure(this.figure);
+            this.board.getCell(target.x, target.y - 1).figure = null;
+            this.figure = null;
+          } else {
+            this.figure.moveFigure(target);
+            if (target.figure) {
+              this.board.addLostFigure(target.figure);
+            }
+            target.setFigure(this.figure);
+            this.figure = null;
+          }
+        } else {
+          if (
+            this.board.getCell(target.x, target.y + 1) &&
+            this.board.getCell(target.x, target.y + 1).figure &&
+            this.board.getCell(target.x, target.y + 1).figure instanceof Pawn &&
+            this.board.getCell(target.x, target.y + 1).figure?.color !== this.figure.color &&
+            //@ts-ignore: error message
+            this.board.getCell(target.x, target.y + 1).figure!.canBeTakeOnThePass
+          ) {
+            //@ts-ignore: error message
+            this.board.addLostFigure(this.board.getCell(target.x, target.y + 1).figure);
+            this.board.getCell(target.x, target.y).setFigure(this.figure);
+            this.figure = null;
+            this.board.getCell(target.x, target.y + 1).figure = null;
+          } else {
+            this.figure.moveFigure(target);
+            if (target.figure) {
+              this.board.addLostFigure(target.figure);
+            }
+            target.setFigure(this.figure);
+            this.figure = null;
+          }
+        }
+      } else {
+        this.figure.moveFigure(target);
+        if (target.figure) {
+          this.board.addLostFigure(target.figure);
+        }
+        target.setFigure(this.figure);
+        this.figure = null;
       }
-      target.setFigure(this.figure);
-      this.figure = null;
     }
   }
 

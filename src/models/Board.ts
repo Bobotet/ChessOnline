@@ -16,6 +16,11 @@ export default class Board {
   whiteKing: King | null = null;
   blackKing: King | null = null;
   changingFigure: boolean = false;
+  takeOnThePassFigureId: number = 0;
+
+  public setTakeOnThePassFigureId(takeOnThePassFigureId: number) {
+    this.takeOnThePassFigureId = takeOnThePassFigureId;
+  }
 
   /**Метод, который инициализирует клетки */
   public initCells() {
