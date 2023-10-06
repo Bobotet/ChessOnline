@@ -64,13 +64,23 @@ export default function ChessBoard({
     if (selectedCell && cell.figure?.name !== FigureNames.KING && cell.available) {
       if (selectedCell.figure?.name !== FigureNames.KING || !board.castling(cell)) {
         selectedCell.moveFigure(cell);
-        if (cell.figure?.name === FigureNames.PAWN) {
-          if (Pawn.pawnCanTransform(cell.figure)) {
+        if (cell.figure instanceof Pawn) {
+          const pawn: Pawn = cell.figure;
+          if (Math.abs(selectedCell.y - cell.y) === 2 && pawn.id !== cell.board.takeOnThePassFigureId) {
+            cell.board.setTakeOnThePassFigureId(pawn.id);
+            pawn!.setCanBeTakeOnThePass(true);
+          } else {
+            cell.board.setTakeOnThePassFigureId(0);
+            pawn!.setCanBeTakeOnThePass(false);
+          }
+          if (Pawn.pawnCanTransform(pawn)) {
             setChangeCell(cell);
             setChangingFigureProcess(true);
           } else {
             setChangingFigureProcess(false);
           }
+        } else {
+          cell.board.setTakeOnThePassFigureId(0);
         }
       }
       setSelectedCell(null);

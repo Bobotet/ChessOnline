@@ -9,9 +9,14 @@ import Bishop from './Bishop';
 
 export default class Pawn extends Figure {
   isFirstStep: boolean = true;
+  canBeTakeOnThePass: boolean = false;
   constructor(color: 'WHITE' | 'BLACK', name: FigureNames | null, cell: Cell) {
     super(color, name, cell);
     this.img = color === 'BLACK' ? blackFigureImg : whiteFigureImg;
+  }
+
+  public setCanBeTakeOnThePass(canBeTakeOnThePass: boolean) {
+    this.canBeTakeOnThePass = canBeTakeOnThePass;
   }
 
   public canMove(target: Cell): boolean {
@@ -20,6 +25,34 @@ export default class Pawn extends Figure {
     }
     const direction = this.color === 'BLACK' ? 1 : -1;
     const firstStepDirection = this.color === 'BLACK' ? 2 : -2;
+    /**Отмечаем соседей пешки для взятия на проходе */
+    let rightNeighbour = null;
+    let letftNeighbour = null;
+    if (target.x === this.cell.x - 1 && target.y === this.cell.y + direction) {
+      letftNeighbour = this.cell.board.getCell(target.x, target.y - direction)?.figure;
+    }
+    if (target.x === this.cell.x + 1 && target.y === this.cell.y + direction) {
+      rightNeighbour = this.cell.board.getCell(target.x, target.y - direction)?.figure;
+    }
+
+    if (
+      rightNeighbour &&
+      rightNeighbour instanceof Pawn &&
+      rightNeighbour!.color !== this.color &&
+      rightNeighbour.canBeTakeOnThePass &&
+      this.cell.board.takeOnThePassFigureId === rightNeighbour.id
+    ) {
+      return true;
+    }
+    if (
+      letftNeighbour &&
+      letftNeighbour instanceof Pawn &&
+      letftNeighbour!.color !== this.color &&
+      letftNeighbour.canBeTakeOnThePass &&
+      this.cell.board.takeOnThePassFigureId === letftNeighbour.id
+    ) {
+      return true;
+    }
     if (
       target.y === this.cell.y + direction &&
       target.x === this.cell.x &&
