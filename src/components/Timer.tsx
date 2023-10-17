@@ -11,14 +11,15 @@ interface TimerProps {
 export default function Timer({ currentPlayer, restart }: TimerProps) {
   const [blackTime, setBlackTime] = useState(300);
   const [whiteTime, setWhiteTime] = useState(300);
+
   const timer = useRef<null | ReturnType<typeof setInterval>>(null);
 
   const decrementWhitePlayer = () => {
-    setWhiteTime(whiteTime - 1);
+    setWhiteTime((prev) => prev - 1);
   };
 
   const decrementBlackPlayer = () => {
-    setBlackTime(blackTime - 1);
+    setBlackTime((prev) => prev - 1);
   };
 
   const startTimer = () => {

@@ -3,6 +3,7 @@
 import ChangeFigure from '@/components/ChangeFigure';
 import ChessBoard from '@/components/ChessBoard';
 import LostFigures from '@/components/LostFigures';
+import Timer from '@/components/Timer';
 /*import Timer from '@/components/TImer';*/
 import Board from '@/models/Board';
 import Player from '@/models/Player';
@@ -44,7 +45,7 @@ export default function Home() {
       <p>{check ? 'Шах' : 'нешах'}</p>
       <p>{mate ? 'Мат' : 'немат'}</p>
       <p>{stalemate ? 'Пат' : 'непат'}</p>
-      {/*<Timer currentPlayer={currentPlayer} restart={createNewBoard} />*/}
+      <Timer currentPlayer={currentPlayer} restart={createNewBoard} />
       <LostFigures figures={board.lostWhiteFigures} />
       <ChessBoard
         board={board}
